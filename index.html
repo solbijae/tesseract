@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <title>OCR TEST</title>
+</head>
+<body>
+    <h1>차량 번호판 종류</h1>
+
+    <div class="d-flex mb-2 justify-content-center">
+        <button type="button" id="uploadBtn" class="btn btn-primary btn-lg">Select File</button>
+        <input type="file" id="fileInput" style="display: none;" onchange="uploadFile()">
+        <div id="uploadArea">
+            <div id="carOccupation"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadBtn').addEventListener('click', function() {
+            document.getElementById('fileInput').click();
+        });
+        function uploadFile() {
+            const fileInput = $('input[type="file"]')[0];
+            const file = fileInput.files[0];        
+            const formData = new FormData();
+            formData.append('file', file);
+
+            $.ajax({
+                url: '/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(result) {
+                    var _inputPath = result.inputPath;
+                    var _fileName = result.fileName
+                    // var imageElement = document.createElement('img');
+                    // imageElement.src = _inputPath;
+                    // document.getElementById('uploadArea').appendChild(imageElement);
+
+                    $.ajax({
+                        url: '/ocr',
+                        type : 'GET',
+                        data: {
+                            inputPath : _inputPath,
+                            fileName : _fileName
+                        },
+                        success: function(response){
+                            console.log(response)
+                            var result = response.output + ' : ' + response.occupation;
+                            $('#carOccupation').text(result);
+                        }
+
+                    })
+                }
+            });
+        }
+    </script>
+</body>
+</html>
