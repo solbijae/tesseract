@@ -47,10 +47,10 @@ router.post('/upload', upload.single('file'), (req, res) => {
 router.get('/ocr', (req, res) => {
     var inputPath = req.query.inputPath;
     var fileName = req.query.fileName;
-    console.log(inputPath)
-    console.log(fileName)
+    var input =__dirname+'/'+inputPath;
+    var output = __dirname + '/data/output/' + fileName
 
-    var cmd = `tesseract "D:\\_workspace\\tesseract2\\data\\input\\${fileName}" "D:\\_workspace\\tesseract2\\data\\output\\${fileName}" --oem 3 --psm 1 -l kor+eng -c tessedit_create_txt=1`;
+    var cmd = `tesseract "${input}" "${output}" --oem 3 --psm 1 -l kor+eng -c tessedit_create_txt=1`;
 
     var command = StringFormat(cmd);
 
@@ -63,7 +63,8 @@ router.get('/ocr', (req, res) => {
         console.log('표준 출력:', stdout);
         console.error('표준 에러:', stderr);
 
-        const output = fs.readFileSync(`D:\\_workspace\\tesseract2\\data\\output\\${fileName}.txt`, 'utf-8');
+
+        const output = fs.readFileSync(__dirname + '/data/output/' + fileName + '.txt', 'utf-8');
         console.log(output)
         const result = output.replace(/(\s*)/g, "");
 
